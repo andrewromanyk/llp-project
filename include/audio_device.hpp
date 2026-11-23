@@ -1,6 +1,7 @@
 #pragma once
 
 #include "spsc.hpp"
+#include "events.hpp"
 #include <cstdint>
 #include <cstddef>
 #include <memory>
@@ -11,12 +12,12 @@ public:
     ~AudioDevice();
 
     // 1. Initialize hardware: fixed 48 kHz Stereo, ~5.3 ms buffer (256 frames)
-    bool init(uint32_t sample_rate = 48000, size_t buffer_frames = 256);
+    bool init(uint32_t sample_rate = 48000, size_t buffer_frames = AUDIO_BLOCK_FRAMES);
 
     // 2. Start audio thread:
-    // AudioDevice will continuously POP audio from 'audio_in_queue'
-    // and (optionally) PUSH a copy to 'visual_out_queue' for the oscilloscope!
-    void start(rigtorp::SPSCQueue<float>& audio_in_queue, rigtorp::SPSCQueue<float>* visual_out_queue = nullptr);
+    // AudioDevice continuously pops AudioEvent blocks from 'audio_in_queue'
+    // and pushes blocks to 'visual_out_queue' for the oscilloscope.
+    void start(rigtorp::SPSCQueue<AudioEvent>& audio_in_queue, rigtorp::SPSCQueue<VisualEvent>& visual_out_queue);
 
     // 3. Stop audio thread and release hardware
     void stop();
