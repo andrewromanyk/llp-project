@@ -1,0 +1,1 @@
+cmake --build --preset conan-release && ./build/Release/audio_tool
